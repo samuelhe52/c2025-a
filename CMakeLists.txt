@@ -4,6 +4,10 @@ project(c2025_challenge)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
+find_package(OpenSSL REQUIRED)
+
+add_executable(p00_level0_all_assignments level0/main.c)
+
 add_executable(p01_running_letter level1/p01_running_letter/main.c)
 
 add_executable(p02_is_prime  level1/p02_is_prime/main.c)
@@ -13,6 +17,8 @@ add_executable(p03_all_primes  level1/p03_all_primes/main.c)
 add_executable(p04_goldbach  level1/p04_goldbach/main.c)
 
 add_executable(p05_encrypt_decrypt  level1/p05_encrypt_decrypt/main.c)
+
+target_link_libraries(p05_encrypt_decrypt PRIVATE OpenSSL::Crypto)
 
 add_executable(p06_hanoi  level1/p06_hanoi/main.c)
 
