@@ -49,19 +49,6 @@ int assignment_1_4(int nums[], int size) {
     return largest;
 }
 
-// Bubble sorts the array in place.
-void assignment_1_5(int nums[], int size) {
-    for (int i = 1; i < size; i++) {
-        for (int j = 0; j < size - i; j++) {
-            if (nums[j] > nums[j + 1]) {
-                const int temp = nums[j + 1];
-                nums[j + 1] = nums[j];
-                nums[j] = temp;
-            }
-        }
-    }
-}
-
 void assignment_2_1() {
     for (int i = 1; i <= 100; i++) {
         if (i % 7 == 0 || (i % 10) == 7) {
@@ -129,7 +116,95 @@ void assignment_2_4(int num1, int num2, int num3, int num4, int num5) {
 //     }
 // }
 
+int sum_of_arrays(int nums[], int size) {
+    int result = 0;
+    for (int i = 0; i < size; i++) {
+        result += nums[i];
+    }
+    return result;
+}
+
+int factorial(int num) {
+    if (num == 0) {
+        return 1;
+    }
+
+    for (int i = 1; i <= num; i++) {
+        num *= i;
+    }
+
+    return num;
+}
+
+int fibonacci(int n) {
+    if (n <= 1) {
+        return n;
+    }
+
+    return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+bool is_right_triangle(int n1, int n2, int n3) {
+    int arr[3] = {n1, n2, n3};
+
+    for (int i = 1; i < 3; i++) {
+        for (int j = 0; j < 3 - i; j++) {
+            if (arr[j] >= arr[j + 1]) {
+                int temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+
+    int leg1 = arr[0];
+    int leg2 = arr[1];
+    int hypo = arr[2];
+
+    if ((leg1 * leg1 + leg2 * leg2) == (hypo * hypo)) {
+        return true;
+    }
+    return false;
+}
+
+typedef struct Rect {
+    int x;
+    int y;
+    int width;
+    int height;
+}rect_t;
+
+bool check_overlap(rect_t rect1, rect_t rect2) {
+    // 1. Check horizontal
+    if (rect1.x + rect1.width < rect2.x || rect2.x + rect2.width < rect1.x) {
+        return false;
+    }
+
+    if (rect1.y + rect1.height < rect2.y || rect2.y + rect2.height < rect1.y) {
+        return false;
+    }
+
+    return true;
+}
+
+void test_check_overlap() {
+    rect_t r1 = {0, 0, 10, 10};
+    rect_t r2 = {5, 5, 10, 10}; // Overlapping
+    rect_t r3 = {10, 10, 5, 5}; // Touching at corner
+    rect_t r4 = {11, 11, 5, 5}; // Not overlapping
+    rect_t r5 = {0, 0, 10, 10}; // Identical to r1
+    rect_t r6 = {2, 2, 5, 5};   // Contained within r1
+    rect_t r7 = {0, 10, 10, 5}; // Touching at edge
+
+    printf("%s", check_overlap(r1, r4) ? "true" : "false");
+}
+
+double usd_to_cny(double n) {
+    const double rate = 7.13;
+    return n * rate;
+}
+
 int main() {
-    assignment_2_4(1,2,3,4,5);
+    test_check_overlap();
     return 0;
 }

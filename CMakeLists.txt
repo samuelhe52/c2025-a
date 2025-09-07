@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD 17)
 
 find_package(OpenSSL REQUIRED)
 
+add_executable(p00_level0_bubble_sort level0/bubbleSort/main.c)
+
 add_executable(p00_level0_all_assignments level0/main.c)
 
 add_executable(p01_running_letter level1/p01_running_letter/main.c)
