@@ -26,6 +26,14 @@ add_executable(p06_hanoi  level1/p06_hanoi/main.c)
 
 add_executable(p07_maze  level1/p07_maze/main.c)
 
+target_compile_definitions(p07_maze PRIVATE
+        LAYOUT_FILE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/level1/p07_maze/maze_layout.txt"
+)
+
+find_package(Curses REQUIRED)
+include_directories(${CURSES_INCLUDE_DIR})
+target_link_libraries(p07_maze PRIVATE ${CURSES_LIBRARIES})
+
 add_executable(p08_push_boxes  level1/p08_push_boxes/main.c)
 
 add_executable(p09_linked_list  level1/p09_linked_list/main.c)
