@@ -11,4 +11,4 @@
 ### 技能强化（彻底搞定指针）：
 
 欢迎大神们都去玩玩这个：
-[Level2-实现 SkipList 算法](../../level2/SkipList/Readme.md)
+[Level2-实现 SkipList 算法](../../level2/SkipList/README.md)
