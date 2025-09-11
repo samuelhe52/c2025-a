@@ -5,6 +5,9 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
 find_package(OpenSSL REQUIRED)
+find_package(Curses REQUIRED)
+
+include_directories(${CURSES_INCLUDE_DIR})
 
 add_executable(p00_level0_bubble_sort level0/bubbleSort/main.c)
 
@@ -30,11 +33,15 @@ target_compile_definitions(p07_maze PRIVATE
         LAYOUT_FILE_PATH="${CMAKE_CURRENT_SOURCE_DIR}/level1/p07_maze/maze_layout.txt"
 )
 
-find_package(Curses REQUIRED)
-include_directories(${CURSES_INCLUDE_DIR})
 target_link_libraries(p07_maze PRIVATE ${CURSES_LIBRARIES})
 
 add_executable(p08_push_boxes  level1/p08_push_boxes/main.c)
+
+target_compile_definitions(p08_push_boxes PRIVATE
+        LEVEL1_LAYOUT_PATH="${CMAKE_CURRENT_SOURCE_DIR}/level1/p08_push_boxes/layout_level_1.txt"
+)
+
+target_link_libraries(p08_push_boxes PRIVATE ${CURSES_LIBRARIES})
 
 add_executable(p09_linked_list  level1/p09_linked_list/main.c)
 
