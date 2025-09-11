@@ -1,9 +1,11 @@
 # =========================
-# JetBrains / CLion
+# JetBrains / CLion / VS Code
 # =========================
 .idea/
 *.iml
 cmake-build-*/
+.vscode/
+build/
 
 # =========================
 # CMake
