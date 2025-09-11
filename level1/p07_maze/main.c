@@ -13,7 +13,7 @@ struct pos {
 };
 
 int maze[MAZE_SIZE][MAZE_SIZE] = {};
-struct pos person_pos;
+struct pos player_pos;
 struct pos exit_pos;
 
 void initialize_maze(void) {
@@ -30,8 +30,8 @@ void initialize_maze(void) {
         for (int j = 0; j < MAZE_SIZE; j++) {
             if (line[j] == PLAYER) {
                 maze[i][j] = PLAYER;
-                person_pos.x = i;
-                person_pos.y = j;
+                player_pos.x = i;
+                player_pos.y = j;
                 continue;
             }
             if (line[j] == EXIT ) {
@@ -81,9 +81,9 @@ void refresh_maze(void) {
 }
 
 void move_left() {
-    if (person_pos.y - 1 > 0 && maze[person_pos.x][person_pos.y - 1] == SPACE) {
-        struct pos current = person_pos;
-        person_pos.y--;
+    if (player_pos.y - 1 > 0 && maze[player_pos.x][player_pos.y - 1] == SPACE) {
+        struct pos current = player_pos;
+        player_pos.y--;
         maze[current.x][current.y] = SPACE;
         maze[current.x][current.y - 1] = PLAYER;
         refresh_maze();
@@ -91,9 +91,9 @@ void move_left() {
 }
 
 void move_right() {
-    if (person_pos.y + 1 < MAZE_SIZE && maze[person_pos.x][person_pos.y + 1] == SPACE) {
-        struct pos current = person_pos;
-        person_pos.y++;
+    if (player_pos.y + 1 < MAZE_SIZE && maze[player_pos.x][player_pos.y + 1] == SPACE) {
+        struct pos current = player_pos;
+        player_pos.y++;
         maze[current.x][current.y] = SPACE;
         maze[current.x][current.y + 1] = PLAYER;
         refresh_maze();
@@ -101,9 +101,9 @@ void move_right() {
 }
 
 void move_up() {
-    if (person_pos.x - 1 > 0 && maze[person_pos.x - 1][person_pos.y] == SPACE) {
-        struct pos current = person_pos;
-        person_pos.x--;
+    if (player_pos.x - 1 > 0 && maze[player_pos.x - 1][player_pos.y] == SPACE) {
+        struct pos current = player_pos;
+        player_pos.x--;
         maze[current.x][current.y] = SPACE;
         maze[current.x - 1][current.y] = PLAYER;
         refresh_maze();
@@ -111,9 +111,9 @@ void move_up() {
 }
 
 void move_down() {
-    if (person_pos.x + 1 < MAZE_SIZE && maze[person_pos.x + 1][person_pos.y] == SPACE) {
-        struct pos current = person_pos;
-        person_pos.x++;
+    if (player_pos.x + 1 < MAZE_SIZE && maze[player_pos.x + 1][player_pos.y] == SPACE) {
+        struct pos current = player_pos;
+        player_pos.x++;
         maze[current.x][current.y] = SPACE;
         maze[current.x + 1][current.y] = PLAYER;
         refresh_maze();
@@ -149,7 +149,7 @@ int main() {
                 refresh();
                 break;
         }
-        if (person_pos.x == exit_pos.x && person_pos.y == exit_pos.y) {
+        if (player_pos.x == exit_pos.x && player_pos.y == exit_pos.y) {
             printw("Congratulations! You've reached the exit!\n");
             refresh();
             break;
