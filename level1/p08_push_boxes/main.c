@@ -1,12 +1,13 @@
 #include <stdlib.h>
 #include <ncurses.h>
-#include <stdbool.h>
 
 #define WALL '#'
 #define SPACE ' '
 #define PLAYER 'P'
 #define BOX 'B'
 #define DEST 'D'
+#define BOX_COUNT 6
+#define DEST_COUNT 6
 #define MAZE_WIDTH 8
 #define MAZE_HEIGHT 8
 
@@ -18,33 +19,58 @@ typedef struct pos {
 
 int maze[MAZE_HEIGHT][MAZE_WIDTH] = {};
 pos player_pos;
-pos box_poses[5];
-pos dest_poses[5];
+pos box_poses[BOX_COUNT];
+pos dest_poses[DEST_COUNT];
 
-bool is_box(const int x, const int y) {
-    for (int i = 0; i < 5; i++) {
+int pos_equal(pos p1, pos p2) {
+    return p1.x == p2.x && p1.y == p2.y;
+}
+
+int box_in_place_count() {
+    int count = 0;
+    for (int i = 0; i < BOX_COUNT; i++) {
+        for (int j = 0; j < DEST_COUNT; j++) {
+            if (pos_equal(box_poses[i], dest_poses[j])) {
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
+// Returns the index of a box if a box exists at the given location.
+// Returns -1 if there's no box.
+int is_box(const int x, const int y) {
+    for (int i = 0; i < BOX_COUNT; i++) {
         if (box_poses[i].x == x && box_poses[i].y == y) {
-            return true;
+            return i;
         }
     }
-    return false;
+    return -1;
 }
 
-bool is_dest(const int x, const int y) {
-    for (int i = 0; i < 5; i++) {
+// Returns the index of a destination if a destination exists at the given location.
+// Returns 0 if there's no destination.
+int is_dest(const int x, const int y) {
+    for (int i = 0; i < DEST_COUNT; i++) {
         if (dest_poses[i].x == x && dest_poses[i].y == y) {
-            return true;
+            return i;
         }
     }
-    return false;
+    return -1;
 }
 
-bool is_player(const int x, const int y) {
+// Returns 1 if the given location is the player's position, otherwise returns 0.
+int is_player(const int x, const int y) {
     return player_pos.x == x && player_pos.y == y;
 }
 
+int is_wall(const int x, const int y) {
+    return maze[x][y] == WALL;
+}
+
 void initialize_map(void) {
-    FILE *fp = fopen(LEVEL1_LAYOUT_PATH, "r");
+    FILE *fp = fopen(LEVEL4_LAYOUT_PATH, "r");
     if (fp == NULL) {
         perror("Error opening layout file");
         exit(EXIT_FAILURE);
@@ -79,11 +105,11 @@ void initialize_map(void) {
 void print_map() {
     for (int row = 0; row < MAZE_HEIGHT; row++) {
         for (int col = 0; col < MAZE_WIDTH; col++) {
-            if (is_player(row, col)){
+            if (is_player(row, col) != 0){
                 printw("%c", PLAYER);
-            } else if (is_box(row, col)) {
+            } else if (is_box(row, col) != -1) {
                 printw("%c", BOX);
-            } else if (is_dest(row, col)) {
+            } else if (is_dest(row, col) != -1) {
                 printw("%c", DEST);
             } else {
                 printw("%c", maze[row][col]);
@@ -102,28 +128,52 @@ void refresh_map(void) {
 }
 
 void move_left() {
-    if (maze[player_pos.x][player_pos.y - 1] == SPACE) {
+    if (!is_wall(player_pos.x, player_pos.y - 1)) {
+        const int idx = is_box(player_pos.x, player_pos.y - 1);
+        if (idx != -1) {
+            if (is_wall(player_pos.x, player_pos.y - 2) ||
+                is_box(player_pos.x, player_pos.y - 2) != -1) return;
+            box_poses[idx].y--;
+        }
         player_pos.y--;
         refresh_map();
     }
 }
 
 void move_right() {
-    if (maze[player_pos.x][player_pos.y + 1] == SPACE) {
+    if (!is_wall(player_pos.x, player_pos.y + 1)) {
+        const int idx = is_box(player_pos.x, player_pos.y + 1);
+        if (idx != -1) {
+            if (is_wall(player_pos.x, player_pos.y + 2) ||
+                is_box(player_pos.x, player_pos.y + 2) != -1) return;
+            box_poses[idx].y++;
+        }
         player_pos.y++;
         refresh_map();
     }
 }
 
 void move_up() {
-    if (maze[player_pos.x - 1][player_pos.y] == SPACE) {
+    if (!is_wall(player_pos.x - 1, player_pos.y)) {
+        const int idx = is_box(player_pos.x - 1, player_pos.y);
+        if (idx != -1) {
+            if (is_wall(player_pos.x - 2, player_pos.y) ||
+                is_box(player_pos.x - 2, player_pos.y) != -1) return;
+            box_poses[idx].x--;
+        }
         player_pos.x--;
         refresh_map();
     }
 }
 
 void move_down() {
-    if (maze[player_pos.x + 1][player_pos.y] == SPACE) {
+    if (!is_wall(player_pos.x + 1, player_pos.y)) {
+        const int idx = is_box(player_pos.x + 1, player_pos.y);
+        if (idx != -1) {
+            if (is_wall(player_pos.x + 2, player_pos.y) ||
+                is_box(player_pos.x + 2, player_pos.y) != -1) return;
+            box_poses[idx].x++;
+        }
         player_pos.x++;
         refresh_map();
     }
@@ -140,6 +190,11 @@ int main() {
 
     int ch;
     while ((ch = getch()) != 'q') {
+        if (ch == 'r') {
+            initialize_map();
+            refresh_map();
+            continue;
+        }
         switch (ch) {
             case KEY_UP:
                 move_up();
@@ -158,11 +213,11 @@ int main() {
                 refresh();
                 break;
         }
-        // if (player_pos.x == exit_pos.x && player_pos.y == exit_pos.y) {
-        //     printw("Congratulations! You've reached the exit!\n");
-        //     refresh();
-        //     break;
-        // }
+        if (box_in_place_count() == BOX_COUNT) {
+            printw("Congratulations! All boxes are in place now!\n");
+            refresh();
+            break;
+        }
         refresh();
     }
 

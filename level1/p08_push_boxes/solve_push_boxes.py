@@ -1,0 +1,90 @@
+# Don't be mistaken, this solution is written entirely by AI.
+from collections import deque
+
+# Directions: (dy, dx), and labels for moves
+DIRS = [(-1, 0, "U"), (1, 0, "D"), (0, -1, "L"), (0, 1, "R")]
+
+def parse_level(raw_map):
+    grid = [list(row) for row in raw_map.strip("\n").splitlines()]
+    player = None
+    boxes = set()
+    goals = set()
+    walls = set()
+
+    for r, row in enumerate(grid):
+        for c, ch in enumerate(row):
+            if ch == "1":
+                walls.add((r, c))
+            elif ch == "0":
+                pass  # empty floor
+            elif ch == "P":
+                player = (r, c)
+            elif ch == "B":
+                boxes.add((r, c))
+            elif ch == "D":
+                goals.add((r, c))
+            else:
+                raise ValueError(f"Unknown cell '{ch}' at {(r, c)}")
+    return grid, player, frozenset(boxes), frozenset(goals), walls
+
+def is_solved(boxes, goals):
+    return all(b in goals for b in boxes)
+
+def neighbors(player, boxes, walls):
+    # Generate possible moves
+    results = []
+    for dy, dx, mv in DIRS:
+        py, px = player
+        ny, nx = py + dy, px + dx
+        if (ny, nx) in walls:
+            continue
+        if (ny, nx) in boxes:
+            # try to push box
+            by, bx = ny + dy, nx + dx
+            if (by, bx) in walls or (by, bx) in boxes:
+                continue
+            new_boxes = set(boxes)
+            new_boxes.remove((ny, nx))
+            new_boxes.add((by, bx))
+            results.append(((ny, nx), frozenset(new_boxes), mv))
+        else:
+            # simple walk
+            results.append(((ny, nx), boxes, mv.lower()))  # lowercase = walk
+    return results
+
+def bfs(player, boxes, goals, walls):
+    start = (player, boxes)
+    queue = deque([(player, boxes, "")])
+    visited = {start}
+
+    while queue:
+        p, b, path = queue.popleft()
+        if is_solved(b, goals):
+            return path
+        for np, nb, mv in neighbors(p, b, walls):
+            state = (np, nb)
+            if state not in visited:
+                visited.add(state)
+                queue.append((np, nb, path + mv))
+    return None
+
+if __name__ == "__main__":
+    level = """
+01111110
+110D0010
+10BDB110
+100DB010
+10BD0P10
+10BDB110
+110D0100
+11111100
+"""
+
+    grid, player, boxes, goals, walls = parse_level(level)
+    solution = bfs(player, boxes, goals, walls)
+    if solution:
+        print("Solution found!")
+        print("Moves:", solution)
+        print("Length:", len(solution))
+    else:
+        print("No solution found.")

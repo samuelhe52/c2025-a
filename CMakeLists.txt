@@ -39,6 +39,9 @@ add_executable(p08_push_boxes  level1/p08_push_boxes/main.c)
 
 target_compile_definitions(p08_push_boxes PRIVATE
         LEVEL1_LAYOUT_PATH="${CMAKE_CURRENT_SOURCE_DIR}/level1/p08_push_boxes/layout_level_1.txt"
+        LEVEL2_LAYOUT_PATH="${CMAKE_CURRENT_SOURCE_DIR}/level1/p08_push_boxes/layout_level_2.txt"
+        LEVEL3_LAYOUT_PATH="${CMAKE_CURRENT_SOURCE_DIR}/level1/p08_push_boxes/layout_level_3.txt"
+        LEVEL4_LAYOUT_PATH="${CMAKE_CURRENT_SOURCE_DIR}/level1/p08_push_boxes/layout_level_4.txt"
 )
 
 target_link_libraries(p08_push_boxes PRIVATE ${CURSES_LIBRARIES})
