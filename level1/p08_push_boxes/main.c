@@ -1,15 +1,6 @@
 #include <stdlib.h>
 #include <ncurses.h>
-
-#define WALL '#'
-#define SPACE ' '
-#define PLAYER 'P'
-#define BOX 'B'
-#define DEST 'D'
-#define BOX_COUNT 6
-#define DEST_COUNT 6
-#define MAZE_WIDTH 8
-#define MAZE_HEIGHT 8
+#include <string.h>
 
 // x is vertical, y is horizontal
 typedef struct pos {
@@ -17,60 +8,26 @@ typedef struct pos {
     int y;
 } pos;
 
-int maze[MAZE_HEIGHT][MAZE_WIDTH] = {};
+#define WALL '#'
+#define SPACE ' '
+#define PLAYER 'P'
+#define BOX 'B'
+#define DEST 'D'
+#define MAZE_WIDTH 8
+#define MAZE_HEIGHT 8
+
+int maze[MAZE_HEIGHT][MAZE_WIDTH];
 pos player_pos;
-pos box_poses[BOX_COUNT];
-pos dest_poses[DEST_COUNT];
+int box_count;
+int dest_count;
+pos box_poses[10]; // large enough for any level
+pos dest_poses[10]; // large enough for any level
+int step = 0;
+int level = 0;
+char* level_file_paths[4] = {LEVEL1_LAYOUT_PATH, LEVEL2_LAYOUT_PATH, LEVEL3_LAYOUT_PATH, LEVEL4_LAYOUT_PATH};
 
-int pos_equal(pos p1, pos p2) {
-    return p1.x == p2.x && p1.y == p2.y;
-}
-
-int box_in_place_count() {
-    int count = 0;
-    for (int i = 0; i < BOX_COUNT; i++) {
-        for (int j = 0; j < DEST_COUNT; j++) {
-            if (pos_equal(box_poses[i], dest_poses[j])) {
-                count++;
-            }
-        }
-    }
-    return count;
-}
-
-// Returns the index of a box if a box exists at the given location.
-// Returns -1 if there's no box.
-int is_box(const int x, const int y) {
-    for (int i = 0; i < BOX_COUNT; i++) {
-        if (box_poses[i].x == x && box_poses[i].y == y) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-// Returns the index of a destination if a destination exists at the given location.
-// Returns 0 if there's no destination.
-int is_dest(const int x, const int y) {
-    for (int i = 0; i < DEST_COUNT; i++) {
-        if (dest_poses[i].x == x && dest_poses[i].y == y) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-// Returns 1 if the given location is the player's position, otherwise returns 0.
-int is_player(const int x, const int y) {
-    return player_pos.x == x && player_pos.y == y;
-}
-
-int is_wall(const int x, const int y) {
-    return maze[x][y] == WALL;
-}
-
-void initialize_map(void) {
-    FILE *fp = fopen(LEVEL4_LAYOUT_PATH, "r");
+void initialize_map(const char* file_path) {
+    FILE *fp = fopen(file_path, "r");
     if (fp == NULL) {
         perror("Error opening layout file");
         exit(EXIT_FAILURE);
@@ -99,10 +56,62 @@ void initialize_map(void) {
         }
     }
 
+    box_count = box_counter;
+    dest_count = dest_counter;
+
     fclose(fp);
 }
 
+
+int pos_equal(pos p1, pos p2) {
+    return p1.x == p2.x && p1.y == p2.y;
+}
+
+int box_in_place_count() {
+    int count = 0;
+    for (int i = 0; i < box_count; i++) {
+        for (int j = 0; j < dest_count; j++) {
+            if (pos_equal(box_poses[i], dest_poses[j])) {
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
+// Returns the index of a box if a box exists at the given location.
+// Returns -1 if there's no box.
+int is_box(const int x, const int y) {
+    for (int i = 0; i < box_count; i++) {
+        if (box_poses[i].x == x && box_poses[i].y == y) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+// Returns the index of a destination if a destination exists at the given location.
+// Returns 0 if there's no destination.
+int is_dest(const int x, const int y) {
+    for (int i = 0; i < dest_count; i++) {
+        if (dest_poses[i].x == x && dest_poses[i].y == y) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+// Returns 1 if the given location is the player's position, otherwise returns 0.
+int is_player(const int x, const int y) {
+    return player_pos.x == x && player_pos.y == y;
+}
+
+int is_wall(const int x, const int y) {
+    return maze[x][y] == WALL;
+}
+
 void print_map() {
+    printw("Level %d\n\n", level);
     for (int row = 0; row < MAZE_HEIGHT; row++) {
         for (int col = 0; col < MAZE_WIDTH; col++) {
             if (is_player(row, col) != 0){
@@ -118,10 +127,12 @@ void print_map() {
         }
         printw("\n");
     }
+    printw("\n");
+    printw("Steps: %d\n", step);
     refresh();
 }
 
-void refresh_map(void) {
+void refresh_map() {
     clear();
     refresh();
     print_map();
@@ -135,6 +146,7 @@ void move_left() {
                 is_box(player_pos.x, player_pos.y - 2) != -1) return;
             box_poses[idx].y--;
         }
+        step++;
         player_pos.y--;
         refresh_map();
     }
@@ -148,6 +160,7 @@ void move_right() {
                 is_box(player_pos.x, player_pos.y + 2) != -1) return;
             box_poses[idx].y++;
         }
+        step++;
         player_pos.y++;
         refresh_map();
     }
@@ -161,6 +174,7 @@ void move_up() {
                 is_box(player_pos.x - 2, player_pos.y) != -1) return;
             box_poses[idx].x--;
         }
+        step++;
         player_pos.x--;
         refresh_map();
     }
@@ -174,6 +188,7 @@ void move_down() {
                 is_box(player_pos.x + 2, player_pos.y) != -1) return;
             box_poses[idx].x++;
         }
+        step++;
         player_pos.x++;
         refresh_map();
     }
@@ -185,14 +200,28 @@ int main() {
     keypad(stdscr, TRUE); // Enable function & arrow keys
     noecho();  // Don't echo input
 
-    initialize_map();
+    printw("Please select a level (1-4):\n");
+    refresh();
+    scanw("%d", &level);
+    if (level < 1 || level > 4) {
+        while (level < 1 || level > 4) {
+            printw("Please select a valid level.\n");
+            scanw("%d", &level);
+            refresh();
+        }
+    }
+
+    clear();
+
+    initialize_map(level_file_paths[level - 1]);
     print_map();
 
     int ch;
     while ((ch = getch()) != 'q') {
         if (ch == 'r') {
-            initialize_map();
+            initialize_map(level_file_paths[level - 1]);
             refresh_map();
+            step = 0;
             continue;
         }
         switch (ch) {
@@ -213,13 +242,17 @@ int main() {
                 refresh();
                 break;
         }
-        if (box_in_place_count() == BOX_COUNT) {
-            printw("Congratulations! All boxes are in place now!\n");
+        refresh();
+        if (box_in_place_count() == box_count) {
+            printw("Congratulations! All boxes are in place.\n");
+            printw("Press q to quit.");
             refresh();
+            while ((ch = getch()) != 'q') {
+                if (ch == 'q') break;
+            }
             break;
         }
-        refresh();
     }
-
+    endwin();
     return 0;
 }
