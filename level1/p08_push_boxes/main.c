@@ -2,19 +2,20 @@
 #include <ncurses.h>
 #include <string.h>
 
+#define WALL '#'
+#define SPACE ' '
+#define PLAYER 'P'
+#define BOX 'B'
+#define BOX_IN_PLACE 'b'
+#define DEST 'D'
+#define MAZE_WIDTH 8
+#define MAZE_HEIGHT 8
+
 // x is vertical, y is horizontal
 typedef struct pos {
     int x;
     int y;
 } pos;
-
-#define WALL '#'
-#define SPACE ' '
-#define PLAYER 'P'
-#define BOX 'B'
-#define DEST 'D'
-#define MAZE_WIDTH 8
-#define MAZE_HEIGHT 8
 
 int maze[MAZE_HEIGHT][MAZE_WIDTH];
 pos player_pos;
@@ -25,6 +26,39 @@ pos dest_poses[10]; // large enough for any level
 int step = 0;
 int level = 0;
 char* level_file_paths[4] = {LEVEL1_LAYOUT_PATH, LEVEL2_LAYOUT_PATH, LEVEL3_LAYOUT_PATH, LEVEL4_LAYOUT_PATH};
+int player_steps[4];
+
+void get_player_steps() {
+    FILE *fp = fopen(PLAYER_STEPS_PATH, "r");
+    if (fp == NULL) {
+        perror("Error opening steps file");
+        exit(EXIT_FAILURE);
+    }
+    for (int i = 0; i < 4; i++) {
+        fscanf(fp, "%d", &player_steps[i]);
+    }
+    fclose(fp);
+}
+
+// Returns 1 if the player has brokent the record, otherwise 0.
+int set_player_steps(const int lvl, const int current_step) {
+    get_player_steps();
+    int broken_record = 0;
+    FILE *fp = fopen(PLAYER_STEPS_PATH, "w");
+    if (fp == NULL) {
+        perror("Error opening steps file");
+        exit(EXIT_FAILURE);
+    }
+    for (int i = 0; i < 4; i++) {
+        if (lvl - 1 == i && (current_step < player_steps[i] || player_steps[i] == -1)) {
+            fprintf(fp, "%d\n", current_step);
+            broken_record = 1;
+        }
+        fprintf(fp, "%d\n", player_steps[i]);
+    }
+    fclose(fp);
+    return broken_record;
+}
 
 void initialize_map(const char* file_path) {
     FILE *fp = fopen(file_path, "r");
@@ -111,13 +145,19 @@ int is_wall(const int x, const int y) {
 }
 
 void print_map() {
-    printw("Level %d\n\n", level);
+    printw("Level %d\n", level);
+    printw("Press 'r' to restart this level.\n");
+    printw("\n");
     for (int row = 0; row < MAZE_HEIGHT; row++) {
         for (int col = 0; col < MAZE_WIDTH; col++) {
             if (is_player(row, col) != 0){
                 printw("%c", PLAYER);
             } else if (is_box(row, col) != -1) {
-                printw("%c", BOX);
+                if (is_dest(row, col) != -1) {
+                    printw("%c", BOX_IN_PLACE);
+                } else {
+                    printw("%c", BOX);
+                }
             } else if (is_dest(row, col) != -1) {
                 printw("%c", DEST);
             } else {
@@ -200,58 +240,89 @@ int main() {
     keypad(stdscr, TRUE); // Enable function & arrow keys
     noecho();  // Don't echo input
 
-    printw("Please select a level (1-4):\n");
-    refresh();
-    scanw("%d", &level);
-    if (level < 1 || level > 4) {
-        while (level < 1 || level > 4) {
-            printw("Please select a valid level.\n");
-            scanw("%d", &level);
-            refresh();
-        }
-    }
-
-    clear();
-
-    initialize_map(level_file_paths[level - 1]);
-    print_map();
-
     int ch;
-    while ((ch = getch()) != 'q') {
-        if (ch == 'r') {
-            initialize_map(level_file_paths[level - 1]);
-            refresh_map();
-            step = 0;
-            continue;
+    while (true) {
+        step = 0;
+        printw("Please select a level (1-4):\n");
+        refresh();
+        int got_valid_level = 0;
+        while (got_valid_level == 0) {
+            ch = getch();
+            switch (ch) {
+                case '1':
+                    level = 1;
+                    got_valid_level = 1;
+                    break;
+                case '2':
+                    level = 2;
+                    got_valid_level = 1;
+                    break;
+                case '3':
+                    level = 3;
+                    got_valid_level = 1;
+                    break;
+                case '4':
+                    level = 4;
+                    got_valid_level = 1;
+                    break;
+                default:
+                    printw("Please select a valid level.\n");
+                    refresh();
+            }
         }
-        switch (ch) {
-            case KEY_UP:
-                move_up();
-                break;
-            case KEY_DOWN:
-                move_down();
-                break;
-            case KEY_LEFT:
-                move_left();
-                break;
-            case KEY_RIGHT:
-                move_right();
-                break;
-            default:
-                printw("\a");
+
+        clear();
+
+        initialize_map(level_file_paths[level - 1]);
+        print_map();
+
+        while (true) {
+            ch = getch();
+            if (ch == 'q') {
+                endwin();
+                exit(0);
+            }
+            if (ch == 'r') {
+                initialize_map(level_file_paths[level - 1]);
+                step = 0;
+                refresh_map();
+                continue;
+            }
+            switch (ch) {
+                case KEY_UP:
+                    move_up();
+                    break;
+                case KEY_DOWN:
+                    move_down();
+                    break;
+                case KEY_LEFT:
+                    move_left();
+                    break;
+                case KEY_RIGHT:
+                    move_right();
+                    break;
+                default:
+                    printw("\a");
+                    refresh();
+                    break;
+            }
+            refresh();
+            if (box_in_place_count() == box_count) {
+                int broken_record = set_player_steps(level, step);
+                printw("Congratulations! All boxes are in place.\n");
+                if (broken_record == 1) {
+                    printw("And you have set a new record for this level!\n");
+                }
                 refresh();
                 break;
-        }
-        refresh();
-        if (box_in_place_count() == box_count) {
-            printw("Congratulations! All boxes are in place.\n");
-            printw("Press q to quit.");
-            refresh();
-            while ((ch = getch()) != 'q') {
-                if (ch == 'q') break;
             }
-            break;
         }
+        printw("\n");
+        printw("Press 'n' to start a new game; press any other key to quit.\n");
+        printw("\n");
+        ch = getch();
+        if (ch == 'n') continue;
+        break;
     }
     endwin();
     return 0;

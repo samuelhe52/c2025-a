@@ -42,6 +42,7 @@ target_compile_definitions(p08_push_boxes PRIVATE
         LEVEL2_LAYOUT_PATH="${CMAKE_CURRENT_SOURCE_DIR}/level1/p08_push_boxes/layout_level_2.txt"
         LEVEL3_LAYOUT_PATH="${CMAKE_CURRENT_SOURCE_DIR}/level1/p08_push_boxes/layout_level_3.txt"
         LEVEL4_LAYOUT_PATH="${CMAKE_CURRENT_SOURCE_DIR}/level1/p08_push_boxes/layout_level_4.txt"
+        PLAYER_STEPS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/level1/p08_push_boxes/player_steps.txt"
 )
 
 target_link_libraries(p08_push_boxes PRIVATE ${CURSES_LIBRARIES})
