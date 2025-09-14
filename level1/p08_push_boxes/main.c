@@ -35,12 +35,15 @@ void get_player_steps() {
         exit(EXIT_FAILURE);
     }
     for (int i = 0; i < 4; i++) {
-        fscanf(fp, "%d", &player_steps[i]);
+        char* step_str = malloc(sizeof(char) * 10);
+        fgets(step_str, 100, fp);
+        player_steps[i] = (int)strtol(step_str, NULL, 10);
+        free(step_str);
     }
     fclose(fp);
 }
 
-// Returns 1 if the player has brokent the record, otherwise 0.
+// Returns 1 if the player has broken the record, otherwise 0.
 int set_player_steps(const int lvl, const int current_step) {
     get_player_steps();
     int broken_record = 0;

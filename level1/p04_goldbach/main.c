@@ -1,7 +1,6 @@
 #include <math.h>
 #include <printf.h>
 #include <stdbool.h>
-#include <math.h>
 
 // The Goldbach Conjecture states that every even integer greater than 2
 // is the sum of two prime numbers.
@@ -9,7 +8,7 @@
 
 // Task: prove its correctness under 100.
 
-bool is_prime(int n) {
+bool is_prime(const int n) {
     const int max_try_num = (int)sqrt(n);
     for (int try_num = 2; try_num <= max_try_num; try_num++) {
         if (n % try_num == 0) {

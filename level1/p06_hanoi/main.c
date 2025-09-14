@@ -3,13 +3,13 @@
 
 const char poles[3] = {'A', 'B', 'C'};
 
-void hanoi_move(char src, char dst, int count) {
+void hanoi_move(const char src, const char dst, const int count) {
     if (count == 1) {
         printf("%c -> %c\n", src, dst);
         return;
     }
 
-    char free_pole;
+    char free_pole = '0';
     for (int i = 0; i < 3; i++) {
         if (!(poles[i] == src || poles[i] == dst)) {
             free_pole = poles[i];

@@ -4,7 +4,7 @@
 
 bool is_prime(const int n) {
     // Test up to the square root of n
-    int maximum_try_num = sqrt(n);
+    const int maximum_try_num = sqrt(n);
     for (int i = 2; i <= maximum_try_num; i++) {
         if (n % i == 0) {
             return false;
