@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 find_package(OpenSSL REQUIRED)
 find_package(Curses REQUIRED)
+find_package(cJSON REQUIRED)
 
 include_directories(${CURSES_INCLUDE_DIR})
 
@@ -50,3 +51,11 @@ target_link_libraries(p08_push_boxes PRIVATE ${CURSES_LIBRARIES})
 add_executable(p09_linked_list  level1/p09_linked_list/main.c)
 
 add_executable(p10_warehouse  level1/p10_warehouse/main.c)
+add_executable(p10_warehouse  level1/p10_warehouse/main.c level1/p10_warehouse/item_list.c)
+
+target_compile_definitions(p10_warehouse PRIVATE
+        WAREHOUSE_STORE_FILE="${CMAKE_CURRENT_SOURCE_DIR}/level1/p10_warehouse/warehouse_store"
+)
+
+target_link_libraries(p10_warehouse PRIVATE ${CJSON_LIBRARIES})
+
