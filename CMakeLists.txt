@@ -50,7 +50,6 @@ target_link_libraries(p08_push_boxes PRIVATE ${CURSES_LIBRARIES})
 
 add_executable(p09_linked_list  level1/p09_linked_list/main.c)
 
-add_executable(p10_warehouse  level1/p10_warehouse/main.c)
 add_executable(p10_warehouse  level1/p10_warehouse/main.c level1/p10_warehouse/item_list.c)
 
 target_compile_definitions(p10_warehouse PRIVATE
@@ -59,3 +58,6 @@ target_compile_definitions(p10_warehouse PRIVATE
 
 target_link_libraries(p10_warehouse PRIVATE ${CJSON_LIBRARIES})
 
+add_executable(sl_01_stack self_learning/01_stack/main.c)
+
+add_executable(sl_02_queue self_learning/02_queue/main.c)
