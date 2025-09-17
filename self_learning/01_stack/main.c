@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define BUFSIZE 100
+#define MAX 100
 
 typedef struct {
     int* data;
@@ -31,7 +31,7 @@ int pop(Stack *s) {
 }
 
 void push(Stack* s, int n) {
-    if (s->top_idx > BUFSIZE - 1) {
+    if (s->top_idx > s->capacity - 1) {
         perror("Stack full");
         exit(1);
     }
@@ -62,13 +62,13 @@ void clear_stack(Stack* s) {
 }
 
 int main() {
-    Stack* stack = init_stack(BUFSIZE);
+    Stack* stack = init_stack(MAX);
     if (stack == NULL) {
         perror("Stack initialization failed");
         exit(EXIT_FAILURE);
     }
 
-    for (int i = 0; i < BUFSIZE; i++) {
+    for (int i = 0; i < MAX; i++) {
         push(stack, i);
     }
 

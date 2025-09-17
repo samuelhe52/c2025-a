@@ -1,0 +1,22 @@
+{
+	"juice":	{
+		"name":	"juice",
+		"quantity":	10,
+		"price":	50
+	},
+	"apple":	{
+		"name":	"apple",
+		"quantity":	5,
+		"price":	12
+	},
+	"orange":	{
+		"name":	"orange",
+		"quantity":	10,
+		"price":	18
+	},
+	"banana":	{
+		"name":	"banana",
+		"quantity":	2,
+		"price":	10
+	}
+}
