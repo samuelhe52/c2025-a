@@ -1,6 +1,6 @@
-#include <printf.h>
+#include <stdio.h>
 #include <stdbool.h>
-#include <tgmath.h>
+#include <math.h>
 #include <time.h>
 #include <stdlib.h>
 

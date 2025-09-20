@@ -1,5 +1,5 @@
-#include <printf.h>
-#include <tgmath.h>
+#include <stdio.h>
+#include <math.h>
 #include <stdbool.h>
 
 bool is_prime(const int n) {

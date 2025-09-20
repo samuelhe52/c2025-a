@@ -1,6 +1,7 @@
 #include <math.h>
-#include <printf.h>
+#include <stdio.h>
 #include <stdbool.h>
+#include <time.h>
 
 // The Goldbach Conjecture states that every even integer greater than 2
 // is the sum of two prime numbers.

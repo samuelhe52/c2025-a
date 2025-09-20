@@ -17,10 +17,13 @@ add_executable(p00_level0_all_assignments level0/main.c)
 add_executable(p01_running_letter level1/p01_running_letter/main.c)
 
 add_executable(p02_is_prime  level1/p02_is_prime/main.c)
+target_link_libraries(p02_is_prime PRIVATE m)
 
 add_executable(p03_all_primes  level1/p03_all_primes/main.c)
+target_link_libraries(p03_all_primes PRIVATE m)
 
 add_executable(p04_goldbach  level1/p04_goldbach/main.c)
+target_link_libraries(p04_goldbach PRIVATE m)
 
 add_executable(p05_encrypt_decrypt  level1/p05_encrypt_decrypt/main.c)
 

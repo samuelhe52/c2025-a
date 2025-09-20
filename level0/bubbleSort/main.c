@@ -1,5 +1,4 @@
-#include <printf.h>
-#include <time.h>
+#include <stdio.h>
 
 // Bubble sorts the array in place.
 void bubble_sort(int nums[], int size) {

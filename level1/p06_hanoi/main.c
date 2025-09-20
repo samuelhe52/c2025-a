@@ -1,5 +1,5 @@
-#include <printf.h>
-#include <stdlib.h>
+#include <stdio.h>
+#include <stdio.h>
 
 const char poles[3] = {'A', 'B', 'C'};
 
