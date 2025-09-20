@@ -6,6 +6,7 @@
 cmake-build-*/
 .vscode/
 build/
+.cache/
 
 # =========================
 # CMake
