@@ -6,6 +6,77 @@ typedef struct node {
     struct node* next;
 } Node;
 
+Node* initialize_list(const int n) {
+    Node* head = (Node*)malloc(sizeof(Node));
+    head->data = n;
+    head->next = NULL;
+    return head;
+}
+
+void insert_before_head(Node** head_ref, const int n) {
+    Node* new_node = (Node*)malloc(sizeof(Node));
+    new_node->data = n;
+    new_node->next = (*head_ref);
+    *head_ref = new_node;
+}
+
+void insert_after_head(Node* head, const int n) {
+    Node* new_node = (Node*)malloc(sizeof(Node));
+    new_node->data = n;
+    new_node->next = head->next;
+    head->next = new_node;
+}
+
+void append_list(Node* head, const int n) {
+    Node* new_node = (Node*)malloc(sizeof(Node));
+    new_node->data = n;
+    new_node->next = NULL;
+
+    Node* tail = head;
+    while (tail->next != NULL) {
+        tail = tail->next;
+    }
+
+    tail->next = new_node;
+}
+
+void delete_element(Node** head, const int n) {
+    Node* prev = NULL;
+    Node* current = *head;
+
+    if (*head == NULL) return;
+    if ((*head)->data == n) {
+        *head = (*head)->next;
+        free(current);
+        return;
+    }
+
+    while (current != NULL) {
+        prev = current;
+        current = current->next;
+        if (current->data == n) {
+            prev->next = current->next;
+            free(current);
+            return;
+        }
+    }
+}
+
+void reverse_list(Node** head_ref) {
+    Node* prev = NULL;
+    Node* current = *head_ref;
+    Node* temp = NULL;
+
+    while (current != NULL) {
+        temp = current->next;
+        current->next = prev;
+        prev = current;
+        current = temp;
+    }
+
+    *head_ref = prev;
+}
+
 // Initialize the linked list with 0-10
 Node* create_linked_list() {
     Node *head = NULL;

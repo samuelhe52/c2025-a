@@ -64,3 +64,5 @@ target_link_libraries(p10_warehouse PRIVATE ${CJSON_LIBRARIES})
 add_executable(sl_01_stack self_learning/01_stack/main.c)
 
 add_executable(sl_02_queue self_learning/02_queue/main.c)
+
+add_executable(sl_03_RPN self_learning/03_RPN/main.cpp)
