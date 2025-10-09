@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.0)
+cmake_minimum_required(VERSION 3.20)
 project(c2025_challenge)
 
 set(CMAKE_C_STANDARD 11)
