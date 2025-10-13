@@ -1,4 +1,7 @@
 #include "item_list.h"
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 
 ItemList* item_list_create(void) {
     ItemList* list = malloc(sizeof(ItemList));

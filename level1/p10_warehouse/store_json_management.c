@@ -1,5 +1,4 @@
 #include "store_json_management.h"
-#include <cjson/cJSON.h>
 
 bool is_store_file_empty() {
     FILE* file = fopen(WAREHOUSE_STORE_FILE, "r");

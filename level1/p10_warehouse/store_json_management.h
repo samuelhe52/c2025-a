@@ -1,7 +1,7 @@
 #pragma once
-#include "item_list.h"
 #include <cjson/cJSON.h>
 #include <stdbool.h>
+#include "tools.h"
 
 cJSON* get_store_json();
 cJSON* save_list_to_json_object(const ItemList* list);

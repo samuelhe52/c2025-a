@@ -1,6 +1,5 @@
 #include <stdio.h>
-#include "store_json_management.h"
-#include "item_list.h"
+#include "tools.h"
 
 void clear_console();
 void print_menu();

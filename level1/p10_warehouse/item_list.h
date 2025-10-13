@@ -3,10 +3,6 @@
 #ifndef ITEM_LIST_H
 #define ITEM_LIST_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #define ITEM_NAME_MAX_LEN 50
 #define MAX_JSON_SIZE 1048576
 #define MAX_ITEM_COUNT 1000
